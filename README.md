@@ -6,6 +6,28 @@ Toastrack keeps every notification you get, so you can find the ones you
 missed or dismissed too quickly. List them by day or app, filter by date and
 urgency, and search their contents. Everything stays on your computer.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="data/screenshots/main-dark.png">
+  <img src="data/screenshots/main-light.png" alt="Toastrack showing today's notifications, with the apps that sent them in the sidebar">
+</picture>
+
+<table>
+  <tr>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="data/screenshots/search-dark.png">
+        <img src="data/screenshots/search-light.png" alt="Searching notifications">
+      </picture>
+    </td>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="data/screenshots/detail-dark.png">
+        <img src="data/screenshots/detail-light.png" alt="A notification's details">
+      </picture>
+    </td>
+  </tr>
+</table>
+
 It has two parts:
 
 - **`toastrack-daemon`**, a small Rust service (systemd user unit
