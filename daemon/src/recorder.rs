@@ -39,11 +39,13 @@ pub struct Recorder {
     senders: HashMap<String, (Option<String>, Option<String>)>,
     /// The last messages handled, since a message may arrive on two monitors while one is replaced
     seen: VecDeque<(String, u32)>,
+    /// Unique name of the org.freedesktop.Notifications owner
+    server: Option<String>,
 }
 
 impl Recorder {
-    pub fn new(store: Store, bus: Connection, dbus: DBusProxy<'static>) -> Self {
-        Recorder { store, bus, dbus, pending: HashMap::new(), senders: HashMap::new(), seen: VecDeque::new() }
+    pub fn new(store: Store, bus: Connection, dbus: DBusProxy<'static>, server: Option<String>) -> Self {
+        Recorder { store, bus, dbus, pending: HashMap::new(), senders: HashMap::new(), seen: VecDeque::new(), server }
     }
 
     pub async fn handle(&mut self, msg: &Message) {
@@ -64,16 +66,25 @@ impl Recorder {
         let member = header.member().map(|m| m.as_str());
         let destination = header.destination().map(|d| d.to_string());
         let reply_serial = header.reply_serial().map(|s| s.get());
+        // Servers may pass calls on, e.g. GNOME's forwards each one to gnome-shell, and re-emit
+        // the signals they get back; only what's between apps and the server is recorded
+        let to_fdo = addressed_to(destination.as_deref(), FDO_INTERFACE, self.server.as_deref());
+        let to_gtk = addressed_to(destination.as_deref(), GTK_INTERFACE, None);
+        let from_server = self.server.as_deref() == Some(sender.as_str());
         let result = match (msg.message_type(), interface, member) {
-            (Type::MethodCall, Some(FDO_INTERFACE), Some("Notify")) => self.on_notify(msg, key).await,
-            (Type::MethodCall, Some(GTK_INTERFACE), Some("AddNotification")) => self.on_gtk_add(msg, sender).await,
-            (Type::MethodCall, Some(GTK_INTERFACE), Some("RemoveNotification")) => self.on_gtk_remove(msg).await,
+            (Type::MethodCall, Some(FDO_INTERFACE), Some("Notify")) if to_fdo => self.on_notify(msg, key).await,
+            (Type::MethodCall, Some(GTK_INTERFACE), Some("AddNotification")) if to_gtk => {
+                self.on_gtk_add(msg, sender).await
+            }
+            (Type::MethodCall, Some(GTK_INTERFACE), Some("RemoveNotification")) if to_gtk => {
+                self.on_gtk_remove(msg).await
+            }
             (Type::MethodReturn, _, _) => match (destination, reply_serial) {
                 (Some(destination), Some(serial)) => self.on_reply(msg, destination, serial),
                 _ => Ok(()),
             },
-            (Type::Signal, Some(FDO_INTERFACE), Some("NotificationClosed")) => self.on_closed(msg).await,
-            (Type::Signal, Some(FDO_INTERFACE), Some("ActionInvoked")) => self.on_action(msg).await,
+            (Type::Signal, Some(FDO_INTERFACE), Some("NotificationClosed")) if from_server => self.on_closed(msg).await,
+            (Type::Signal, Some(FDO_INTERFACE), Some("ActionInvoked")) if from_server => self.on_action(msg).await,
             _ => Ok(()),
         };
         if let Err(e) = result {
@@ -82,7 +93,8 @@ impl Recorder {
     }
 
     /// The notification server went away, taking its notifications with it
-    pub async fn server_changed(&mut self) {
+    pub async fn server_changed(&mut self, server: Option<String>) {
+        self.server = server;
         self.pending.clear();
         if let Err(e) = self.store.close_all(SOURCE_FDO, store::now()) {
             log::warn!("Can't close notifications: {e:#}");
@@ -212,5 +224,25 @@ impl Recorder {
         if let Err(e) = self.bus.emit_signal(None::<&str>, SIGNAL_PATH, SIGNAL_INTERFACE, signal, &(id,)).await {
             log::warn!("Can't emit {signal}: {e}");
         }
+    }
+}
+
+/// Whether a call with @destination is meant for the service with @well_known name, owned by @owner
+fn addressed_to(destination: Option<&str>, well_known: &str, owner: Option<&str>) -> bool {
+    destination.is_some_and(|d| d == well_known || Some(d) == owner)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn only_calls_to_the_server() {
+        assert!(addressed_to(Some(FDO_INTERFACE), FDO_INTERFACE, Some(":1.19")));
+        assert!(addressed_to(Some(":1.19"), FDO_INTERFACE, Some(":1.19")));
+        // GNOME's server forwarding to gnome-shell
+        assert!(!addressed_to(Some("org.gnome.Shell"), FDO_INTERFACE, Some(":1.19")));
+        assert!(!addressed_to(Some(":1.7"), FDO_INTERFACE, Some(":1.19")));
+        assert!(!addressed_to(None, FDO_INTERFACE, None));
     }
 }

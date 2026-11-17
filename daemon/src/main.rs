@@ -68,7 +68,8 @@ async fn main() -> Result<()> {
     let bus = Connection::session().await?;
     let dbus = DBusProxy::new(&bus).await?;
     let mut owner_changes = dbus.receive_name_owner_changed_with_args(&[(0, FDO_INTERFACE)]).await?;
-    let mut monitor = start_monitor(server_owner(&dbus).await.as_deref()).await?;
+    let server = server_owner(&dbus).await;
+    let mut monitor = start_monitor(server.as_deref()).await?;
 
     // Owned only once recording, so systemd and the app know we're ready
     let reply = bus.request_name_with_flags(DAEMON_NAME, RequestNameFlags::DoNotQueue.into()).await?;
@@ -76,7 +77,7 @@ async fn main() -> Result<()> {
         bail!("Another instance is already running");
     }
 
-    let mut recorder = Recorder::new(store, bus.clone(), dbus.clone());
+    let mut recorder = Recorder::new(store, bus.clone(), dbus.clone(), server);
     let mut prune = tokio::time::interval(PRUNE_INTERVAL);
     let mut sigterm = signal(SignalKind::terminate())?;
     let mut sigint = signal(SignalKind::interrupt())?;
@@ -93,7 +94,7 @@ async fn main() -> Result<()> {
                 log::info!("Notification server is now {}", owner.as_deref().unwrap_or("gone"));
                 // Started before the old one is dropped so nothing is missed in between
                 monitor = start_monitor(owner.as_deref()).await?;
-                recorder.server_changed().await;
+                recorder.server_changed(owner).await;
             },
             _ = prune.tick() => recorder.prune().await,
             _ = sigterm.recv() => break,
