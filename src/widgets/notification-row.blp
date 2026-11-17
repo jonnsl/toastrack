@@ -1,0 +1,76 @@
+using Gtk 4.0;
+
+template $ToastrackNotificationRow: Box {
+  spacing: 12;
+  margin-top: 10;
+  margin-bottom: 10;
+  margin-start: 12;
+  margin-end: 12;
+
+  Image icon {
+    pixel-size: 40;
+    valign: start;
+    accessible-role: presentation;
+
+    styles [
+      "notification-icon",
+    ]
+  }
+
+  Box {
+    orientation: vertical;
+    spacing: 2;
+    hexpand: true;
+
+    Box {
+      spacing: 6;
+
+      Label app_label {
+        xalign: 0;
+        ellipsize: end;
+        hexpand: true;
+
+        styles [
+          "caption",
+          "dim-label",
+        ]
+      }
+
+      Image critical_icon {
+        icon-name: "dialog-warning-symbolic";
+        tooltip-text: _("Critical");
+        visible: false;
+
+        styles [
+          "error",
+        ]
+      }
+
+      Label time_label {
+        styles [
+          "caption",
+          "dim-label",
+          "numeric",
+        ]
+      }
+    }
+
+    Label summary_label {
+      xalign: 0;
+      ellipsize: end;
+
+      styles [
+        "heading",
+      ]
+    }
+
+    Label body_label {
+      xalign: 0;
+      wrap: true;
+      wrap-mode: word_char;
+      lines: 3;
+      ellipsize: end;
+      use-markup: true;
+    }
+  }
+}

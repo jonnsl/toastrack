@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/jonnsl/Toastrack">
+    <file preprocess="xml-stripblanks">window.ui</file>
+    <file preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
+    <file preprocess="xml-stripblanks">dialogs/notification-dialog.ui</file>
+    <file preprocess="xml-stripblanks">dialogs/preferences-dialog.ui</file>
+    <file preprocess="xml-stripblanks">widgets/notification-row.ui</file>
+    <file>style.css</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/toastrack-symbolic.svg</file>
+  </gresource>
+</gresources>

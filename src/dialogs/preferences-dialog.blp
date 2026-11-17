@@ -1,0 +1,49 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ToastrackPreferencesDialog: Adw.PreferencesDialog {
+  content-height: 460;
+
+  Adw.PreferencesPage {
+    title: _("General");
+    icon-name: "preferences-system-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Recording");
+      description: _("A background service records notifications, also when Toastrack is closed. It only listens and doesn’t change how notifications are shown.");
+
+      Adw.SwitchRow recording_row {
+        title: _("Record Notifications");
+        subtitle: _("Start at login");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("History");
+
+      Adw.ComboRow retention_row {
+        title: _("Keep Notifications");
+
+        model: StringList {
+          strings [
+            _("Forever"),
+            _("1 Year"),
+            _("6 Months"),
+            _("3 Months"),
+            _("1 Month"),
+            _("1 Week"),
+          ]
+        };
+      }
+
+      Adw.ActionRow location_row {
+        title: _("Location");
+        subtitle-selectable: true;
+
+        styles [
+          "property",
+        ]
+      }
+    }
+  }
+}

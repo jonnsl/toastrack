@@ -1,0 +1,18 @@
+[package]
+name = "toastrack-daemon"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+env_logger = { version = "0.11.11", default-features = false }
+futures-util = { version = "0.3.34", default-features = false }
+log = "0.4.35"
+png = "0.18.1"
+rusqlite = "0.43.0"
+tokio = { version = "1.54.1", features = ["rt", "macros", "signal", "time", "sync"] }
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+
+[profile.release]
+lto = true
+codegen-units = 1

@@ -1,0 +1,20 @@
+[Unit]
+Description=Toastrack notification history recorder
+Documentation=https://github.com/jonnsl/toastrack
+
+[Service]
+Type=dbus
+BusName=io.github.jonnsl.Toastrack.Daemon
+ExecStart=@daemon_path@
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=default.target

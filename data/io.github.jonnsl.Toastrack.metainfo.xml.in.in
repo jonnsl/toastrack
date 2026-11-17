@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@APP_ID@</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Toastrack</name>
+  <summary>Browse and search the history of your notifications</summary>
+  <description>
+    <p>Toastrack keeps a history of every desktop notification, so you can find the ones you missed or dismissed too quickly.</p>
+    <p>Notifications are recorded by a small background service that only listens: it works with whatever already shows your notifications. Browse them by day or app, and search their contents. Everything stays on your computer.</p>
+  </description>
+  <developer id="io.github.jonnsl">
+    <name>Jonnathan Soares</name>
+  </developer>
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+  <url type="homepage">https://github.com/jonnsl/toastrack</url>
+  <url type="bugtracker">https://github.com/jonnsl/toastrack/issues</url>
+  <content_rating type="oars-1.1"/>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <releases>
+    <release version="0.1.0" date="2026-11-17">
+      <description>
+        <p>Initial development release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

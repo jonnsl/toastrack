@@ -1,0 +1,17 @@
+data/io.github.jonnsl.Toastrack.desktop.in.in
+data/io.github.jonnsl.Toastrack.metainfo.xml.in.in
+data/io.github.jonnsl.Toastrack.gschema.xml.in
+src/application.vala
+src/dialogs/day-dialog.vala
+src/dialogs/notification-dialog.blp
+src/dialogs/notification-dialog.vala
+src/dialogs/preferences-dialog.blp
+src/dialogs/preferences-dialog.vala
+src/models/app-identity.vala
+src/models/notification.vala
+src/services/history.vala
+src/shortcuts-dialog.blp
+src/utils.vala
+src/widgets/app-row.vala
+src/window.blp
+src/window.vala

@@ -1,0 +1,24 @@
+/* Application-specific styles. Prefer libadwaita style classes; keep this minimal. */
+
+listview.history {
+  background: none;
+}
+
+
+listview.history > header {
+  padding: 18px 18px 6px;
+}
+
+image.notification-icon {
+  border-radius: 8px;
+}
+
+.sidebar-heading {
+  margin: 12px 12px 6px;
+}
+
+.action-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}

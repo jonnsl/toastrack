@@ -1,0 +1,159 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ToastrackNotificationDialog: Adw.Dialog {
+  content-width: 480;
+  content-height: 560;
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [start]
+      Button {
+        icon-name: "edit-copy-symbolic";
+        tooltip-text: _("Copy");
+        clicked => $on_copy();
+      }
+    }
+
+    content: ScrolledWindow {
+      hscrollbar-policy: never;
+      propagate-natural-height: true;
+
+      child: Box {
+        orientation: vertical;
+        spacing: 18;
+        margin-top: 6;
+        margin-bottom: 24;
+        margin-start: 18;
+        margin-end: 18;
+
+        Box {
+          spacing: 12;
+
+          Image icon {
+            pixel-size: 64;
+            valign: start;
+            accessible-role: presentation;
+
+            styles [
+              "notification-icon",
+            ]
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 6;
+            valign: center;
+            hexpand: true;
+
+            Label summary_label {
+              xalign: 0;
+              wrap: true;
+              wrap-mode: word_char;
+              selectable: true;
+
+              styles [
+                "title-3",
+              ]
+            }
+
+            Label app_label {
+              xalign: 0;
+              ellipsize: end;
+
+              styles [
+                "dim-label",
+              ]
+            }
+          }
+        }
+
+        Label body_label {
+          xalign: 0;
+          wrap: true;
+          wrap-mode: word_char;
+          selectable: true;
+          use-markup: true;
+        }
+
+        Adw.WrapBox actions_box {
+          child-spacing: 6;
+          line-spacing: 6;
+          visible: false;
+        }
+
+        Adw.PreferencesGroup {
+          title: _("Details");
+
+          Adw.ActionRow received_row {
+            title: _("Received");
+
+            styles [
+              "property",
+            ]
+          }
+
+          Adw.ActionRow status_row {
+            title: _("Status");
+
+            styles [
+              "property",
+            ]
+          }
+
+          Adw.ActionRow urgency_row {
+            title: _("Urgency");
+
+            styles [
+              "property",
+            ]
+          }
+
+          Adw.ActionRow category_row {
+            title: _("Category");
+
+            styles [
+              "property",
+            ]
+          }
+
+          Adw.ActionRow sender_row {
+            title: _("Sent by");
+            subtitle-selectable: true;
+
+            styles [
+              "property",
+            ]
+          }
+        }
+
+        Box {
+          spacing: 12;
+          halign: center;
+
+          Button open_button {
+            label: _("_Open App");
+            use-underline: true;
+            clicked => $on_open_app();
+
+            styles [
+              "pill",
+            ]
+          }
+
+          Button {
+            label: _("_Delete");
+            use-underline: true;
+            clicked => $on_delete();
+
+            styles [
+              "pill",
+              "destructive-action",
+            ]
+          }
+        }
+      };
+    };
+  };
+}

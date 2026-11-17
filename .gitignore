@@ -1,0 +1,7 @@
+/build/
+/_build/
+/daemon/target/
+/po/toastrack.pot
+/build-aux/arch/*
+!/build-aux/arch/PKGBUILD
+!/build-aux/arch/toastrack.install

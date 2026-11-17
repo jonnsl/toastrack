@@ -1,0 +1,9 @@
+post_install() {
+  echo ":: Open Toastrack and click Start Recording, or run:"
+  echo "   systemctl --user enable --now toastrack.service"
+}
+
+pre_remove() {
+  echo ":: Stop recording before removing, if it's running:"
+  echo "   systemctl --user disable --now toastrack.service"
+}

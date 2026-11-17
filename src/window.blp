@@ -1,0 +1,228 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ToastrackWindow: Adw.ApplicationWindow {
+  title: _("Toastrack");
+  width-request: 360;
+  height-request: 294;
+
+  Adw.Breakpoint {
+    condition ("max-width: 620sp")
+
+    setters {
+      split_view.collapsed: true;
+    }
+  }
+
+  content: Adw.ToastOverlay toast_overlay {
+    child: Adw.NavigationSplitView split_view {
+      min-sidebar-width: 220;
+
+      sidebar: Adw.NavigationPage {
+        title: _("Toastrack");
+        tag: "sidebar";
+
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            [end]
+            MenuButton {
+              primary: true;
+              icon-name: "open-menu-symbolic";
+              tooltip-text: _("Main Menu");
+              menu-model: primary_menu;
+            }
+          }
+
+          content: ScrolledWindow {
+            hscrollbar-policy: never;
+
+            child: ListBox sidebar_list {
+              selection-mode: browse;
+
+              styles [
+                "navigation-sidebar",
+              ]
+            };
+          };
+        };
+      };
+
+      content: Adw.NavigationPage content_page {
+        title: _("All Notifications");
+        tag: "content";
+
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            [start]
+            ToggleButton search_button {
+              icon-name: "system-search-symbolic";
+              tooltip-text: _("Search");
+              active: bind search_bar.search-mode-enabled bidirectional;
+            }
+
+            title-widget: Adw.WindowTitle window_title {
+              title: _("All Notifications");
+            };
+
+            [end]
+            MenuButton {
+              icon-name: "view-sort-descending-symbolic";
+              tooltip-text: _("Sort and Filter");
+              menu-model: view_menu;
+            }
+
+            [end]
+            MenuButton date_button {
+              always-show-arrow: true;
+              tooltip-text: _("Filter by Date");
+              menu-model: date_menu;
+            }
+          }
+
+          [top]
+          SearchBar search_bar {
+            child: Adw.Clamp {
+              maximum-size: 500;
+
+              child: SearchEntry search_entry {
+                placeholder-text: _("Search notifications…");
+                hexpand: true;
+              };
+            };
+          }
+
+          [top]
+          Adw.Banner recorder_banner {
+            title: _("New notifications aren’t being recorded");
+            button-label: _("_Start Recording");
+            action-name: "win.start-recording";
+          }
+
+          content: Stack stack {
+            StackPage {
+              name: "list";
+
+              child: ScrolledWindow scrolled_window {
+                hscrollbar-policy: never;
+
+                child: Adw.ClampScrollable {
+                  maximum-size: 760;
+
+                  child: ListView list_view {
+                    single-click-activate: true;
+                    show-separators: true;
+                    tab-behavior: item;
+
+                    styles [
+                      "history",
+                    ]
+                  };
+                };
+              };
+            }
+
+            StackPage {
+              name: "empty";
+
+              child: Adw.StatusPage empty_page {};
+            }
+          };
+        };
+      };
+    };
+  };
+}
+
+menu date_menu {
+  section {
+    item {
+      label: _("_Any Time");
+      action: "win.date-range";
+      target: "any";
+    }
+
+    item {
+      label: _("_Today");
+      action: "win.date-range";
+      target: "today";
+    }
+
+    item {
+      label: _("_Yesterday");
+      action: "win.date-range";
+      target: "yesterday";
+    }
+
+    item {
+      label: _("Past _7 Days");
+      action: "win.date-range";
+      target: "week";
+    }
+
+    item {
+      label: _("Past _30 Days");
+      action: "win.date-range";
+      target: "month";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Choose a Day…");
+      action: "win.choose-day";
+    }
+  }
+}
+
+menu view_menu {
+  section {
+    label: _("Order");
+
+    item {
+      label: _("_Newest First");
+      action: "win.sort-order";
+      target: "newest";
+    }
+
+    item {
+      label: _("_Oldest First");
+      action: "win.sort-order";
+      target: "oldest";
+    }
+  }
+
+  section {
+    item {
+      label: _("Only _Critical");
+      action: "win.critical-only";
+    }
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Delete Notifications…");
+      action: "win.delete-shown";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "app.shortcuts";
+    }
+
+    item {
+      label: _("_About Toastrack");
+      action: "app.about";
+    }
+  }
+}
